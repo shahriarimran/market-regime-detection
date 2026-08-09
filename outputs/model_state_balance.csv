@@ -1,0 +1,7 @@
+State,Observations,Share,Regime_Name,Model
+0,78,0.03190184049079755,High-Volatility Uptrend,K-Means
+1,2124,0.8687116564417178,Baseline Trend,K-Means
+2,243,0.09938650306748466,High-Volatility Correction,K-Means
+0,1278,0.5226993865030675,Elevated-Volatility Transition,HMM
+1,800,0.32719836400818,Low-Volatility Trend,HMM
+2,367,0.15010224948875256,High-Volatility Stress,HMM

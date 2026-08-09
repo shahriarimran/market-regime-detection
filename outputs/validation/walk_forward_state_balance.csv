@@ -1,0 +1,15 @@
+Test_Year,State,Regime_Name,Observations,Share
+2021,0,High-Volatility Stress,59,0.2260536398467433
+2021,1,Elevated-Volatility Transition,139,0.5325670498084292
+2021,2,Low-Volatility Trend,63,0.2413793103448276
+2022,0,Elevated-Volatility Transition,193,0.7423076923076923
+2022,1,Low-Volatility Trend,10,0.038461538461538464
+2022,2,High-Volatility Stress,57,0.21923076923076923
+2023,0,Elevated-Volatility Transition,44,0.16923076923076924
+2023,1,High-Volatility Stress,39,0.15
+2023,2,Low-Volatility Trend,177,0.6807692307692308
+2024,0,Low-Volatility Trend,175,0.6679389312977099
+2024,1,Elevated-Volatility Transition,87,0.3320610687022901
+2025,1,Low-Volatility Trend,241,0.9233716475095786
+2025,2,Elevated-Volatility Transition,20,0.07662835249042145
+2026,1,Low-Volatility Trend,157,1.0

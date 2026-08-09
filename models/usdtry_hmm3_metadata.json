@@ -1,0 +1,28 @@
+{
+    "model_type": "GaussianHMM",
+    "n_states": 3,
+    "covariance_type": "diag",
+    "training_start_date": "2017-03-27",
+    "training_end_date": "2026-08-07",
+    "training_observations": 2445,
+    "best_seed": 6,
+    "features": [
+        "Return_1D",
+        "Return_5D",
+        "Volatility_5D",
+        "Volatility_20D",
+        "Volatility_60D",
+        "MA_Distance_20D",
+        "MA_Slope_20D",
+        "Drawdown_60D"
+    ],
+    "state_names": {
+        "1": "Low-Volatility Trend",
+        "0": "Elevated-Volatility Transition",
+        "2": "High-Volatility Stress"
+    },
+    "validation_status": "PASSED",
+    "acceptance_gates": "7/7",
+    "intended_use": "Low-frequency USD/TRY market-regime detection",
+    "not_intended_for": "Direct BUY/SELL forecasting"
+}

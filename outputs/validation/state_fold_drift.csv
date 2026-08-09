@@ -1,0 +1,16 @@
+Regime_Name,From_Year,To_Year,Centroid_Drift
+Low-Volatility Trend,2021,2022,2.416586859579991
+Low-Volatility Trend,2022,2023,2.5954574365355803
+Low-Volatility Trend,2023,2024,0.5710175571871507
+Low-Volatility Trend,2024,2025,0.09277100369910118
+Low-Volatility Trend,2025,2026,0.1392189638042371
+Elevated-Volatility Transition,2021,2022,3.3634961546795252
+Elevated-Volatility Transition,2022,2023,3.0167597799846617
+Elevated-Volatility Transition,2023,2024,0.22704390281154693
+Elevated-Volatility Transition,2024,2025,0.03234358250518333
+Elevated-Volatility Transition,2025,2026,0.12419470215273608
+High-Volatility Stress,2021,2022,2.3552080883510396
+High-Volatility Stress,2022,2023,0.9833275934283879
+High-Volatility Stress,2023,2024,0.9431921085791243
+High-Volatility Stress,2024,2025,0.0076403260203117196
+High-Volatility Stress,2025,2026,0.15942508036425668

@@ -1,0 +1,4 @@
+State,Regime_Name,Episodes,Mean_Duration,Median_Duration,Min_Duration,Max_Duration
+0,Elevated-Volatility Transition,35,36.51428571428571,14.0,1,296
+1,Low-Volatility Trend,16,50.0,18.0,1,267
+2,High-Volatility Stress,19,19.31578947368421,5.0,3,100

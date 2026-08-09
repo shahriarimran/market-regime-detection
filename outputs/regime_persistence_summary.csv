@@ -1,0 +1,4 @@
+Regime,Regime_Name,Episodes,Mean_Duration,Median_Duration,Min_Duration,Max_Duration
+0,High-Volatility Uptrend,11,7.090909090909091,5.0,1,23
+1,Baseline Trend,32,66.375,6.5,1,768
+2,High-Volatility Correction,30,8.1,1.0,1,81

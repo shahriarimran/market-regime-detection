@@ -1,0 +1,7 @@
+Test_Year,Volatility_5D_Order,Volatility_20D_Order,Volatility_60D_Order,MA_Slope_Order,Passed_Checks,Total_Checks
+2021,True,True,True,True,4,4
+2022,True,True,False,True,3,4
+2023,True,True,True,True,4,4
+2024,True,True,True,True,4,4
+2025,True,True,True,True,4,4
+2026,True,True,True,True,4,4

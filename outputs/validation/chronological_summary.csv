@@ -1,0 +1,2 @@
+Train_Start,Train_End,Test_Start,Test_End,Train_Observations,Test_Observations,Best_Seed,Train_LogL_Per_Obs,Test_LogL_Per_Obs,Mean_Test_Confidence,Median_Test_Confidence,Low_Confidence_Share,Test_Transitions,Test_Switch_Rate,Test_Episodes,Median_Test_Episode,Mean_Test_Episode
+2017-03-27,2023-12-29,2024-01-01,2026-08-07,1765,680,4,-5.245530543218832,5.281761423663942,0.9949032212714333,0.9999999985975792,0.0014705882352941176,30,0.044182621502209134,31,4.0,21.93548387096774
