@@ -76,10 +76,10 @@ def fit_best_hmm(X_scaled):
                 best_sizes = sizes.sort_index()
 
         except Exception as exc:
-            print(
-                f"Seed {seed:2d} failed: "
-                f"{type(exc).__name__}: {exc}"
+            exc.add_note(
+                f"Seed {seed:2d} failed during HMM fitting."
             )
+            raise
 
     if best_model is None:
         raise RuntimeError(

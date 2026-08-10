@@ -109,12 +109,11 @@ def fit_best_hmm(X_train):
                 best_seed = seed
 
         except Exception as exc:
-
-            print(
-                f"Seed {seed:2d} failed: "
-                f"{type(exc).__name__}: "
-                f"{exc}"
+            exc.add_note(
+                f"Seed {seed:2d} failed during HMM fitting."
             )
+            raise
+
 
     if best_model is None:
 
