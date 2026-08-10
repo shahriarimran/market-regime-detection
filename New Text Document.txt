@@ -1,7 +1,0 @@
-K-Means provided a strong static clustering baseline, exhibiting substantially greater geometric separation than the Gaussian HMM. However, its state distribution was highly imbalanced, with approximately 87% of observations assigned to a single baseline cluster, and its median regime episode lasted only three observations.
-
-The three-state Gaussian HMM produced weaker geometric separation but substantially stronger temporal coherence. Median episode duration increased from 3 to 14 observations, mean self-transition probability increased from 90.7% to 96.7%, and the resulting states were considerably more balanced at approximately 52%, 33%, and 15% of the historical sample.
-
-The relatively low cross-model agreement indicates that the HMM does not merely smooth the K-Means classifications. Instead, it yields a different latent representation characterized by low-volatility, elevated-volatility transition, and high-volatility stress states. Notably, all observations assigned to the K-Means high-volatility uptrend cluster were contained within the HMM high-volatility stress state.
-
-Because temporal persistence is a defining property of a market regime, the Gaussian HMM is therefore selected as the candidate operational model, while K-Means is retained as the static unsupervised benchmark. Final model selection remains subject to chronological out-of-sample validation.
