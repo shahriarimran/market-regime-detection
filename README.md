@@ -1171,3 +1171,460 @@ Isolation Forest
 
 Milestone 2 therefore combines an interpretable operational detector with a complementary unsupervised machine-learning signal.
 
+# Project 3 — USD/TRY Direction Classification
+
+## 1. Objective
+
+Project 3 extends the USD/TRY market-regime and anomaly-detection work into supervised direction classification. The objective is to classify the **next 5 trading days** of USD/TRY movement using only information available at observation time `t`.
+
+The final target is:
+
+* **DOWN:** future 5-trading-day return < -0.5%
+* **FLAT:** -0.5% <= future 5-trading-day return <= +0.5%
+* **UP:** future 5-trading-day return > +0.5%
+
+The final model provides a directional probability distribution rather than directly issuing a BUY/HOLD/SELL instruction.
+
+## 2. Dataset and Target Engineering
+
+The supervised dataset contains **2,440 labeled observations** spanning **2017-03-27 to 2026-07-31**.
+
+Candidate fixed-threshold and volatility-adjusted targets were evaluated. The selected primary target was **5 trading days at ±0.5%**.
+
+| Class |  Share |
+| ----- | -----: |
+| DOWN  | 17.79% |
+| FLAT  | 43.32% |
+| UP    | 38.89% |
+
+The target was intentionally not forced into equal class proportions. USD/TRY exhibits a pronounced long-run upward drift, and the class distribution changes substantially over time.
+
+The annual class shares for the selected target were:
+
+| Year |   DOWN |   FLAT |     UP |
+| ---- | -----: | -----: | -----: |
+| 2017 | 38.00% | 25.00% | 37.00% |
+| 2018 | 34.48% | 19.16% | 46.36% |
+| 2019 | 31.80% | 24.14% | 44.06% |
+| 2020 | 22.90% | 29.39% | 47.71% |
+| 2021 | 28.35% | 20.69% | 50.96% |
+| 2022 | 11.54% | 46.92% | 41.54% |
+| 2023 |  1.92% | 53.85% | 44.23% |
+| 2024 |  6.11% | 56.87% | 37.02% |
+| 2025 |  0.00% | 79.69% | 20.31% |
+| 2026 |  0.00% | 94.74% |  5.26% |
+
+This temporal class drift motivated expanding chronological validation and class-aware metrics instead of a random train/test split.
+
+## 3. Predictor Set
+
+Eight causal predictors were retained:
+
+1. `Return_1D`
+2. `Return_5D`
+3. `Volatility_5D`
+4. `Volatility_20D`
+5. `Volatility_60D`
+6. `MA_Distance_20D`
+7. `MA_Slope_20D`
+8. `Drawdown_60D`
+
+Raw `USDTRY`, year, future-return columns, and target columns were excluded from the model input matrix.
+
+The final feature-engineering dataset contained no missing or infinite predictor values.
+
+## 4. Naive Baselines
+
+Three expanding-window baselines were evaluated over 2021–2026:
+
+* historical majority class;
+* random prediction using historical class priors;
+* 5-day momentum classification.
+
+Momentum-5D used the same ±0.5% thresholds as the supervised target.
+
+### Pooled baseline results
+
+| Baseline        |   Accuracy | Balanced Accuracy |   Macro F1 |
+| --------------- | ---------: | ----------------: | ---------: |
+| Majority        |     35.30% |            33.33% |     17.39% |
+| Prior Random    |     35.99% |            35.52% |     31.91% |
+| **Momentum-5D** | **63.19%** |        **50.06%** | **50.03%** |
+
+Momentum-5D therefore became the primary model-selection hurdle.
+
+## 5. Logistic Regression
+
+Both ordinary and class-balanced logistic regression were evaluated using fold-specific standardization.
+
+### Pooled results
+
+| Model             | Accuracy | Balanced Accuracy | Macro F1 |
+| ----------------- | -------: | ----------------: | -------: |
+| Logistic          |   58.72% |            48.01% |   48.03% |
+| Logistic Balanced |   59.41% |            46.46% |   43.54% |
+
+Plain logistic regression trailed Momentum-5D by approximately **2.05 percentage points in balanced accuracy** and **2.00 percentage points in macro F1**.
+
+Class balancing reduced pooled performance further.
+
+The linear-model stage therefore did not establish incremental predictive value beyond the financial heuristic.
+
+## 6. Nonlinear Tree Models
+
+Four nonlinear candidates were evaluated:
+
+* Random Forest;
+* class-balanced Random Forest;
+* HistGradientBoosting;
+* class-balanced HistGradientBoosting.
+
+### Pooled results
+
+| Model                         |   Accuracy | Balanced Accuracy |   Macro F1 |
+| ----------------------------- | ---------: | ----------------: | ---------: |
+| **Random Forest**             | **64.70%** |        **53.56%** | **53.60%** |
+| Random Forest Balanced        |     60.92% |            51.40% |     49.71% |
+| HistGradientBoosting          |     50.62% |            43.85% |     42.64% |
+| HistGradientBoosting Balanced |     53.37% |            45.87% |     44.42% |
+
+The unweighted Random Forest was the first supervised model to exceed Momentum-5D on both primary class-aware metrics.
+
+Its initial pooled advantage was:
+
+* **+3.50 percentage points balanced accuracy**
+* **+3.57 percentage points macro F1**
+
+The class-balanced Random Forest improved balanced accuracy relative to momentum but failed to improve macro F1. Both gradient-boosting variants underperformed the benchmark.
+
+## 7. Random Forest Stability
+
+The selected Random Forest was compared directly against Momentum-5D on the same 1,456 out-of-sample observations.
+
+### Pooled per-class metrics
+
+| Model         | Class | Precision | Recall |     F1 |
+| ------------- | ----- | --------: | -----: | -----: |
+| Random Forest | DOWN  |    29.73% | 26.40% | 27.97% |
+| Random Forest | FLAT  |    78.98% | 72.22% | 75.45% |
+| Random Forest | UP    |    53.34% | 62.06% | 57.37% |
+| Momentum-5D   | DOWN  |    19.53% | 20.00% | 19.76% |
+| Momentum-5D   | FLAT  |    74.82% | 74.54% | 74.68% |
+| Momentum-5D   | UP    |    55.64% | 55.64% | 55.64% |
+
+The Random Forest materially improved the difficult minority `DOWN` class while maintaining competitive performance on the dominant classes.
+
+Annual comparison versus Momentum-5D produced:
+
+* balanced-accuracy wins: **4/6 years**
+* macro-F1 wins: **3/6 years**
+
+The RF and momentum models agreed on **71.22%** of predictions.
+
+Paired prediction outcomes were:
+
+| Outcome               |  Share |
+| --------------------- | -----: |
+| Both correct          | 51.85% |
+| RF only correct       | 12.84% |
+| Momentum only correct | 11.33% |
+| Both wrong            | 23.97% |
+
+### Confidence diagnostics
+
+| RF confidence | Observed accuracy |
+| ------------- | ----------------: |
+| <50%          |            50.72% |
+| 50–60%        |            59.21% |
+| 60–70%        |            66.53% |
+| 70–80%        |            76.67% |
+| 80%+          |            95.08% |
+
+Observed accuracy increased monotonically with model confidence.
+
+## 8. Random Forest Robustness
+
+The canonical specification was frozen as:
+
+```python
+RandomForestClassifier(
+    n_estimators=500,
+    max_depth=6,
+    min_samples_leaf=10,
+    max_features="sqrt",
+    class_weight=None,
+    random_state=42,
+    n_jobs=-1,
+)
+```
+
+Five random seeds and four nearby structural configurations were evaluated.
+
+For the canonical configuration, the five seeds produced:
+
+| Seed | Accuracy | Balanced Accuracy | Macro F1 |
+| ---: | -------: | ----------------: | -------: |
+|    7 |   65.25% |            54.28% |   54.34% |
+|   21 |   65.45% |            54.40% |   54.47% |
+|   42 |   64.70% |            53.56% |   53.60% |
+|   77 |   65.38% |            54.52% |   54.57% |
+|  101 |   64.35% |            52.73% |   52.71% |
+
+All five seeds remained above Momentum-5D on balanced accuracy and macro F1.
+
+Prediction stability was high:
+
+* mean pairwise seed prediction agreement: **97.80%**
+* minimum pairwise agreement: **96.91%**
+* robustness gates passed: **5/5**
+
+Nearby shallower, deeper, smaller-leaf, and larger-leaf forests also remained competitive. The original canonical parameters were retained rather than selecting a variant using the already-observed OOS results.
+
+## 9. Cross-Milestone Ablation
+
+Leakage-safe outputs from Project 1 and Project 2 were tested as additional M3 predictors.
+
+M1 contributed causal regime probabilities.
+
+M2 contributed statistical anomaly information and Isolation Forest anomaly-score information.
+
+The leakage-safe common coverage consisted of **1,456 observations from 2021-01-01 to 2026-07-31**. Because earlier cross-milestone features were unavailable, the matched ablation used 2022–2026 as test years.
+
+### Purged matched-sample results
+
+| Architecture      |   Accuracy | Balanced Accuracy |   Macro F1 |
+| ----------------- | ---------: | ----------------: | ---------: |
+| **Base RF**       | **66.11%** |        **46.46%** | **46.25%** |
+| Base RF + M1      |     63.93% |            45.98% |     45.63% |
+| Base RF + M2      |     64.27% |            44.67% |     44.04% |
+| Base RF + M1 + M2 |     63.68% |            44.85% |     43.95% |
+
+M1 increased matched-sample DOWN recall from **5.88% to 7.84%**, but this small minority-class improvement did not offset lower aggregate performance.
+
+M2 and M1+M2 reduced both balanced accuracy and macro F1.
+
+**Decision:** M1 and M2 remain separate contextual modules and are not used as inputs to the final M3 classifier.
+
+## 10. Purged Chronological Validation
+
+The target is based on a future 5-trading-day return. Therefore, the final five observations in each training fold have target windows that extend into the following test period.
+
+A final validation audit removed these five observations from each annual training fold.
+
+### Final purged pooled performance
+
+| Model             |   Accuracy | Balanced Accuracy |   Macro F1 |
+| ----------------- | ---------: | ----------------: | ---------: |
+| **Random Forest** | **64.56%** |        **53.41%** | **53.49%** |
+| Momentum-5D       |     63.19% |            50.06% |     50.03% |
+
+The final leakage-controlled RF advantage was therefore:
+
+* **+3.35 percentage points balanced accuracy**
+* **+3.46 percentage points macro F1**
+
+### Final purged per-class metrics
+
+| Model         | Class | Precision | Recall |         F1 |
+| ------------- | ----- | --------: | -----: | ---------: |
+| Random Forest | DOWN  |    30.00% | 26.40% | **28.09%** |
+| Random Forest | FLAT  |    78.70% | 72.34% | **75.38%** |
+| Random Forest | UP    |    53.11% | 61.48% | **56.99%** |
+| Momentum-5D   | DOWN  |    19.53% | 20.00% |     19.76% |
+| Momentum-5D   | FLAT  |    74.82% | 74.54% |     74.68% |
+| Momentum-5D   | UP    |    55.64% | 55.64% |     55.64% |
+
+The purge changed the Random Forest result only marginally, indicating that its advantage was not created by target-window boundary leakage.
+
+## 11. Probability Calibration
+
+The Random Forest probabilities were evaluated using chronological expanding temperature scaling.
+
+For each test year, the temperature parameter was estimated using only prior out-of-sample RF predictions.
+
+The fitted temperatures were:
+
+| Test Year | Temperature |
+| --------- | ----------: |
+| 2022      |      0.9974 |
+| 2023      |      0.9796 |
+| 2024      |      0.9781 |
+| 2025      |      0.9648 |
+| 2026      |      0.8880 |
+
+All fitted temperatures were below 1, indicating mild under-confidence in the raw RF probabilities.
+
+### Pooled calibration results
+
+| Metric             | Uncalibrated | Temperature scaled |
+| ------------------ | -----------: | -----------------: |
+| Log loss           |      0.74239 |        **0.73858** |
+| Brier score        |      0.44734 |        **0.44581** |
+| Confidence ECE     |      0.06190 |        **0.05697** |
+| Mean classwise ECE |      0.07873 |        **0.07605** |
+
+Temporal calibration wins were:
+
+* log loss: **5/5**
+* Brier score: **3/5**
+* ECE: **4/5**
+
+All **5/5 calibration-selection gates passed**.
+
+Temperature scaling preserved every predicted class.
+
+## 12. Final Model Selection
+
+The final model-selection stage compiled the classification, purge, robustness, cross-milestone, and probability-calibration evidence.
+
+All **11/11 final acceptance gates passed**:
+
+* RF beat Momentum-5D on purged balanced accuracy;
+* RF beat Momentum-5D on purged macro F1;
+* RF improved DOWN-class F1;
+* every canonical RF seed beat momentum on balanced accuracy;
+* every canonical RF seed beat momentum on macro F1;
+* seed agreement exceeded 95%;
+* the base 8-feature RF won the cross-milestone ablation;
+* temperature scaling improved log loss;
+* temperature scaling improved Brier score;
+* temperature scaling improved ECE;
+* temperature scaling preserved predicted classes.
+
+The architecture was therefore assigned:
+
+`SELECTED_FOR_FINAL_TRAINING`
+
+Final architecture:
+
+* **Target:** `Target_5D_0p5pct`
+* **Classifier:** canonical Random Forest
+* **Features:** `BASE_8_FEATURES`
+* **M1 features:** no
+* **M2 features:** no
+* **Calibration:** temperature scaling
+
+## 13. Final Frozen Training
+
+The production classifier was trained on all **2,440 labeled observations** from **2017-03-27 through 2026-07-31**.
+
+Training distribution:
+
+| Class | Count |  Share |
+| ----- | ----: | -----: |
+| DOWN  |   434 | 17.79% |
+| FLAT  | 1,057 | 43.32% |
+| UP    |   949 | 38.89% |
+
+The production temperature was fitted using all **1,456 purged out-of-sample RF probability observations**, rather than the final RF's in-sample predictions.
+
+Final production temperature:
+
+**T = 0.841805**
+
+Fit diagnostics:
+
+* raw OOS log loss: **0.790844**
+* temperature-fit log loss: **0.786317**
+* class predictions unchanged: **True**
+
+These fit diagnostics are not treated as new unbiased calibration validation; the chronological expanding calibration experiment remains the model-selection evidence.
+
+The serialized Random Forest was reloaded and checked against the original fitted estimator.
+
+Maximum probability difference after reload:
+
+**2.220 × 10⁻¹⁶**
+
+This is effectively floating-point numerical noise and confirms reproducible serialization.
+
+### Final production feature importance
+
+| Feature         | Importance |
+| --------------- | ---------: |
+| Volatility_20D  |     21.37% |
+| Volatility_5D   |     20.32% |
+| Volatility_60D  |     17.83% |
+| MA_Slope_20D    |      9.44% |
+| Drawdown_60D    |      9.28% |
+| Return_5D       |      9.25% |
+| MA_Distance_20D |      9.04% |
+| Return_1D       |      3.46% |
+
+The three volatility variables jointly account for the largest share of Random Forest importance. The selected classifier is therefore using the broader volatility environment substantially rather than simply reproducing the 5-day momentum heuristic.
+
+## 14. Operational Inference
+
+The frozen M3 model was run using the latest available causal feature observation.
+
+Operational observation:
+
+* **Date:** 2026-08-07
+* **USD/TRY:** 47.7111
+* **Training cutoff:** 2026-07-31
+* **Inference mode:** `OUT_OF_SAMPLE_OPERATIONAL`
+
+The model returned:
+
+**FLAT**
+
+### Calibrated probability distribution
+
+| Direction | Probability |
+| --------- | ----------: |
+| DOWN      |       0.27% |
+| **FLAT**  |  **87.94%** |
+| UP        |      11.79% |
+
+Additional diagnostics:
+
+* calibrated confidence: **87.94%**
+* probability margin: **76.15 percentage points**
+* raw `P(DOWN)`: 0.65%
+* raw `P(FLAT)`: 83.89%
+* raw `P(UP)`: 15.46%
+* production temperature: **0.841805**
+
+Because the observation date occurs after the supervised training cutoff, this prediction is a genuine operational inference rather than a training-reference prediction.
+
+The `FLAT` classification means the model assigns the highest probability to the subsequent 5-trading-day USD/TRY return remaining inside the predefined **-0.5% to +0.5% band**.
+
+## 15. Conclusion
+
+Project 3 demonstrates that nonlinear supervised classification adds **modest but repeatable** predictive information beyond a strong 5-day momentum heuristic.
+
+The final purged Random Forest achieved:
+
+* **64.56% accuracy**
+* **53.41% balanced accuracy**
+* **53.49% macro F1**
+* **28.09% DOWN-class F1**
+
+Momentum-5D achieved:
+
+* **63.19% accuracy**
+* **50.06% balanced accuracy**
+* **50.03% macro F1**
+* **19.76% DOWN-class F1**
+
+The Random Forest advantage survived chronological purge validation, random-seed variation, nearby hyperparameter configurations, direct year-by-year stability analysis, and a cross-milestone feature ablation.
+
+Projects 1 and 2 remain useful contextual modules, but their outputs did not provide incremental direction-classification value and were therefore excluded from the production M3 feature vector.
+
+Temperature scaling provided a small but consistent improvement in probability quality without altering directional classifications.
+
+The final Project 3 architecture is therefore a **temperature-calibrated, 8-feature Random Forest for 5-trading-day USD/TRY direction classification**.
+
+## 16. Production Artifacts
+
+```text
+models/milestone_3/usdtry_direction_rf.joblib
+models/milestone_3/usdtry_direction_temperature.json
+models/milestone_3/usdtry_direction_metadata.json
+models/milestone_3/usdtry_direction_feature_importance.csv
+
+outputs/milestone_3/operational/latest_direction.json
+outputs/milestone_3/operational/direction_inference_history.csv
+```
+
+**Model version:** `M3-v0.1.0`
