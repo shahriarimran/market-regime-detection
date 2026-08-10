@@ -1,0 +1,2 @@
+RF_Pooled_Accuracy,Momentum_Pooled_Accuracy,RF_Pooled_Balanced_Accuracy,Momentum_Pooled_Balanced_Accuracy,Delta_Balanced_Accuracy,RF_Pooled_Macro_F1,Momentum_Pooled_Macro_F1,Delta_Macro_F1,BA_Annual_Wins,F1_Annual_Wins,Prediction_Agreement,Selection_Gates_Passed,Selection_Gates_Total
+0.646978021978022,0.6318681318681318,0.5355922636198677,0.5006100900609137,0.034982173558953944,0.5359592424894017,0.500276602613629,0.03568263987577269,4,3,0.7122252747252747,4,4

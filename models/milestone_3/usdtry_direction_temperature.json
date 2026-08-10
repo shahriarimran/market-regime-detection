@@ -1,0 +1,18 @@
+{
+  "model_version": "M3-v0.1.0",
+  "method": "temperature_scaling",
+  "temperature": 0.8418048930199643,
+  "class_order": [
+    "DOWN",
+    "FLAT",
+    "UP"
+  ],
+  "fit_source": "purged annual OOS Random Forest probabilities",
+  "fit_observations": 1456,
+  "fit_start": "2021-01-01",
+  "fit_end": "2026-07-31",
+  "raw_log_loss_fit_diagnostic": 0.7908444174382179,
+  "calibrated_log_loss_fit_diagnostic": 0.7863167085670351,
+  "class_predictions_unchanged": true,
+  "note": "Fit diagnostics are not new unbiased validation metrics. Chronological expanding calibration validation is stored under outputs/milestone_3/validation."
+}

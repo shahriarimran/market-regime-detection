@@ -1,0 +1,35 @@
+﻿Section,Metric,Model,Year,Class,Value,Unit
+Target,Primary target,,,,5D ±0.5%,
+Target,DOWN share,,,,17.79,%
+Target,FLAT share,,,,43.32,%
+Target,UP share,,,,38.89,%
+Dataset,Labeled observations,,,,2440,
+Naive baseline,Pooled balanced accuracy,Momentum_5D,,,50.06,%
+Naive baseline,Pooled macro F1,Momentum_5D,,,50.03,%
+Logistic,Pooled balanced accuracy,Logistic,,,48.01,%
+Logistic,Pooled macro F1,Logistic,,,48.03,%
+Tree models,Pooled balanced accuracy,RandomForest,,,53.56,%
+Tree models,Pooled macro F1,RandomForest,,,53.60,%
+RF robustness,Mean seed prediction agreement,RandomForest,,,97.80,%
+RF robustness,Minimum seed prediction agreement,RandomForest,,,96.91,%
+Purged validation,Pooled accuracy,RandomForest,,,64.56,%
+Purged validation,Pooled balanced accuracy,RandomForest,,,53.41,%
+Purged validation,Pooled macro F1,RandomForest,,,53.49,%
+Purged validation,DOWN F1,RandomForest,,DOWN,28.09,%
+Cross-milestone,Balanced accuracy,Base_RF_Matched,,,46.46,%
+Cross-milestone,Balanced accuracy,Base_RF_Plus_M1,,,45.98,%
+Cross-milestone,Balanced accuracy,Base_RF_Plus_M2,,,44.67,%
+Cross-milestone,Balanced accuracy,Base_RF_Plus_M1_M2,,,44.85,%
+Calibration,Pooled log loss,Uncalibrated,,,0.74239,
+Calibration,Pooled log loss,Temperature,,,0.73858,
+Calibration,Pooled confidence ECE,Uncalibrated,,,0.06190,
+Calibration,Pooled confidence ECE,Temperature,,,0.05697,
+Final selection,Acceptance gates passed,,,,11/11,
+Final training,Final temperature,RandomForest,,,0.841805,
+Operational,Observation date,,,,2026-08-07,
+Operational,USDTRY,,,,47.7111,
+Operational,Prediction,M3-v0.1.0,,,FLAT,
+Operational,Calibrated confidence,M3-v0.1.0,,,87.94,%
+Operational,P(DOWN),M3-v0.1.0,,,0.27,%
+Operational,P(FLAT),M3-v0.1.0,,,87.94,%
+Operational,P(UP),M3-v0.1.0,,,11.79,%

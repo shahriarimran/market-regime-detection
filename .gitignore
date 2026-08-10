@@ -20,9 +20,13 @@ desktop.ini
 # Temporary files
 *.tmp
 *.log
-
+.pytest_cache/
+.pytest-tmp*/
 # Generated processed datasets
 data/processed/
 
 # Runtime operational outputs
 outputs/operational/
+
+
+

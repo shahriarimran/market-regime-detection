@@ -1,0 +1,6 @@
+Metric,Value
+Baseline annual rate SD,0.03284925406103347
+IF annual rate SD (seed 42),0.07191048250065787
+Mean IF seed pairwise Jaccard,0.9669512898746309
+Worst annual mean seed Jaccard,0.8884452561168809
+Mean absolute IF-baseline annual rate gap,0.04577333202968847

@@ -1,0 +1,31 @@
+{
+  "model_version": "M3-v0.1.0",
+  "observation_date": "2026-08-07",
+  "forecast_horizon": "NEXT_5_TRADING_DAYS",
+  "target_definition": {
+    "DOWN": "future 5D return < -0.5%",
+    "FLAT": "-0.5% <= future 5D return <= +0.5%",
+    "UP": "future 5D return > +0.5%"
+  },
+  "direction": "FLAT",
+  "confidence": 0.8793589956818046,
+  "probability_margin": 0.7614655303022289,
+  "normalized_entropy": 0.3470812454313644,
+  "calibrated_probabilities": {
+    "DOWN": 0.0027475389386195865,
+    "FLAT": 0.8793589956818046,
+    "UP": 0.11789346537957573
+  },
+  "raw_probabilities": {
+    "DOWN": 0.006528424888575893,
+    "FLAT": 0.8389128525504117,
+    "UP": 0.15455872256101255
+  },
+  "temperature": 0.8418048930199643,
+  "inference_mode": "OUT_OF_SAMPLE_OPERATIONAL",
+  "training_cutoff": "2026-07-31",
+  "feature_set": "BASE_8_FEATURES",
+  "use_m1": false,
+  "use_m2": false,
+  "USDTRY": 47.7111
+}

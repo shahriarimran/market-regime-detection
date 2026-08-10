@@ -1,0 +1,13 @@
+Anomaly_Type,Model,Flip_Rate_Monotonic,Detection_Rate_Monotonic
+RETURN_SHOCK,Baseline,True,True
+RETURN_SHOCK,IF,True,True
+RETURN_SHOCK,OCSVM,True,True
+VOLATILITY_SPIKE,Baseline,True,True
+VOLATILITY_SPIKE,IF,True,True
+VOLATILITY_SPIKE,OCSVM,True,True
+DRAWDOWN_BREAK,Baseline,True,True
+DRAWDOWN_BREAK,IF,True,True
+DRAWDOWN_BREAK,OCSVM,True,True
+COMPOUND_STRESS,Baseline,True,True
+COMPOUND_STRESS,IF,True,True
+COMPOUND_STRESS,OCSVM,True,True

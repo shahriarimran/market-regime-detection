@@ -1,0 +1,13 @@
+{
+  "date": "2026-08-07",
+  "usdtry": 47.7111,
+  "anomaly_state": "NORMAL",
+  "baseline_anomaly": false,
+  "volatility_floor": 0.0007028294836738612,
+  "volatility_floor_quantile": 0.05,
+  "baseline_anomaly_score": 0.396268979573304,
+  "primary_reason": "VOLATILITY_ACCELERATION",
+  "if_anomaly_score": 0.34723045447070594,
+  "if_training_percentile": 0.23381443298969073,
+  "inference_mode": "TRAINING_REFERENCE"
+}

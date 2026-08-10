@@ -1,0 +1,76 @@
+{
+  "model_version": "M3-v0.1.0",
+  "milestone": 3,
+  "task": "USDTRY 5-trading-day direction classification",
+  "target": "Target_5D_0p5pct",
+  "target_definition": {
+    "horizon_trading_days": 5,
+    "down_threshold": -0.005,
+    "up_threshold": 0.005,
+    "classes": [
+      "DOWN",
+      "FLAT",
+      "UP"
+    ]
+  },
+  "feature_set": "BASE_8_FEATURES",
+  "features": [
+    "Return_1D",
+    "Return_5D",
+    "Volatility_5D",
+    "Volatility_20D",
+    "Volatility_60D",
+    "MA_Distance_20D",
+    "MA_Slope_20D",
+    "Drawdown_60D"
+  ],
+  "classifier": "RandomForestClassifier",
+  "random_forest_parameters": {
+    "n_estimators": 500,
+    "max_depth": 6,
+    "min_samples_leaf": 10,
+    "max_features": "sqrt",
+    "class_weight": null,
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "calibration": {
+    "method": "temperature_scaling",
+    "temperature": 0.8418048930199643,
+    "artifact": "usdtry_direction_temperature.json"
+  },
+  "use_m1_features": false,
+  "use_m2_features": false,
+  "training": {
+    "observations": 2440,
+    "start_date": "2017-03-27",
+    "end_date": "2026-07-31",
+    "class_counts": {
+      "DOWN": 434,
+      "FLAT": 1057,
+      "UP": 949
+    },
+    "class_shares": {
+      "DOWN": 0.1778688524590164,
+      "FLAT": 0.4331967213114754,
+      "UP": 0.3889344262295082
+    }
+  },
+  "validation_reference": {
+    "method": "purged expanding annual walk-forward",
+    "purge_observations": 5,
+    "purged_oos_balanced_accuracy": 0.534054735064065,
+    "purged_oos_macro_f1": 0.5348534572396194,
+    "purged_oos_down_f1": 0.2808510638297872,
+    "cross_milestone_features": "rejected",
+    "temperature_scaling": "selected"
+  },
+  "software": {
+    "python": "3.14.5",
+    "scikit_learn": "1.9.0",
+    "scipy": "1.18.0",
+    "pandas": "3.0.3",
+    "numpy": "2.5.1",
+    "joblib": "1.5.3"
+  }
+}

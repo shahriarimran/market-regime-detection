@@ -1,0 +1,2 @@
+Model_Version,Training_Observations,Training_Start,Training_End,DOWN_Count,FLAT_Count,UP_Count,Final_Temperature,OOS_Calibration_Observations,Raw_OOS_LogLoss_Fit_Diagnostic,Calibrated_LogLoss_Fit_Diagnostic,Model_File,Calibration_File,Metadata_File
+M3-v0.1.0,2440,2017-03-27,2026-07-31,434,1057,949,0.8418048930199643,1456,0.7908444174382179,0.7863167085670351,models\milestone_3\usdtry_direction_rf.joblib,models\milestone_3\usdtry_direction_temperature.json,models\milestone_3\usdtry_direction_metadata.json

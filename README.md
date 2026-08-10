@@ -889,7 +889,9 @@ feature diagnostics
 * `Volatility_Ratio_5D_60D`
 * `Drawdown_Change_5D`
 
-The rolling return z-score is causal: the current return is compared only against the previous 20 observations.
+The rolling return z-score is causal: the current return is compared only against the previous 20 observations. Its numerical volatility floor is the 5th percentile of prior-20-observation return volatility estimated from the applicable training sample only.
+
+For chronological and walk-forward validation, every fold freezes its own training-only floor and applies that same value to both training and test transformations. Test rows retain trailing historical context for rolling calculations, but test/future observations never influence the floor. The final `M2-v0.2.0` artifact freezes the floor estimated through 2026-08-07 (`0.0007028294836738612`) and operational inference reuses it without estimation.
 
 The resulting dataset contains the original M1 features plus the new anomaly features.
 
@@ -1110,7 +1112,7 @@ models/
 └── usdtry_if_training_scores.npy
 ```
 
-The empirical training-score distribution is preserved so that future observations can be assigned a historical Isolation Forest percentile.
+The joblib artifact contains the Isolation Forest, exact feature order, model version, training cutoff, and frozen volatility-floor value/quantile. The empirical training-score distribution is preserved separately so future observations can be assigned a historical Isolation Forest percentile.
 
 The percentile is a **historical rank, not an anomaly probability**.
 
@@ -1118,7 +1120,7 @@ The percentile is a **historical rank, not an anomaly probability**.
 
 ## Operational Inference
 
-`operational_anomaly_inference.py` loads the frozen model and thresholds without retraining.
+`operational_anomaly_inference.py` loads the frozen model, thresholds, and volatility floor without retraining or re-estimating preprocessing parameters. It regenerates anomaly features from the available causal M1 history using that frozen floor.
 
 For each observation it returns:
 
@@ -1171,6 +1173,7 @@ Isolation Forest
 
 Milestone 2 therefore combines an interpretable operational detector with a complementary unsupervised machine-learning signal.
 
+<<<<<<< HEAD
 # Project 3 — USD/TRY Direction Classification
 
 ## 1. Objective
@@ -1628,3 +1631,6 @@ outputs/milestone_3/operational/direction_inference_history.csv
 ```
 
 **Model version:** `M3-v0.1.0`
+=======
+
+>>>>>>> 1d2ac6c (Remediate M2 leakage and validate Projects 1-3)

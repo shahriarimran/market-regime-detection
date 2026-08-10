@@ -1,0 +1,2 @@
+Temperature,OOS_Observations,Raw_Log_Loss,Calibrated_Log_Loss,Delta_Log_Loss,Class_Predictions_Unchanged,Max_Input_Probability_Sum_Error
+0.8418048930199643,1456,0.7908444174382179,0.7863167085670351,-0.004527708871182812,True,1.6653345369377348e-15

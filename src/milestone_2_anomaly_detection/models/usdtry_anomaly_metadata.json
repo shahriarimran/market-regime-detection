@@ -1,0 +1,59 @@
+{
+  "model_version": "M2-v0.2.0",
+  "milestone": "M2_FX_ANOMALY_DETECTION",
+  "training_start": "2017-04-24",
+  "training_cutoff": "2026-08-07",
+  "training_observations": 2425,
+  "volatility_floor": {
+    "value": 0.0007028294836738612,
+    "quantile": 0.05,
+    "estimation_sample": "training_only",
+    "training_cutoff": "2026-08-07"
+  },
+  "primary_operational_detector": "STATISTICAL_BASELINE",
+  "secondary_ml_signal": "ISOLATION_FOREST_SCORE",
+  "binary_states": [
+    "NORMAL",
+    "ANOMALOUS"
+  ],
+  "features": [
+    "Return_1D",
+    "Return_5D",
+    "Volatility_5D",
+    "Volatility_20D",
+    "Volatility_60D",
+    "MA_Distance_20D",
+    "MA_Slope_20D",
+    "Drawdown_60D",
+    "Return_ZScore_20D",
+    "Volatility_Ratio_5D_60D",
+    "Drawdown_Change_5D"
+  ],
+  "baseline_thresholds": {
+    "absolute_return_zscore_20d": 4.0,
+    "volatility_ratio_5d_60d": 2.0,
+    "absolute_drawdown_change_5d": 0.05,
+    "absolute_return_1d": 0.04
+  },
+  "historical_baseline_anomaly_count": 162,
+  "historical_baseline_anomaly_rate": 0.0668041237113402,
+  "isolation_forest": {
+    "n_estimators": 500,
+    "max_samples": 512,
+    "random_state": 42,
+    "contamination": "auto",
+    "operational_binary_threshold": null,
+    "role": "continuous_secondary_score"
+  },
+  "validation_decision": {
+    "isolation_forest_binary": "REJECTED_AS_PRIMARY",
+    "one_class_svm_binary": "REJECTED_AS_PRIMARY",
+    "hard_regime_conditioning": "REJECTED",
+    "statistical_baseline_binary": "SELECTED_PRIMARY",
+    "isolation_forest_score": "SELECTED_SECONDARY"
+  },
+  "score_interpretation": {
+    "if_score": "Higher values indicate greater multivariate isolation.",
+    "if_training_percentile": "Empirical percentile relative to the frozen training-history score distribution; not an anomaly probability."
+  }
+}
