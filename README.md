@@ -831,3 +831,343 @@ Selected model:
 > **Three-State Gaussian Hidden Markov Model**
 
 The next machine-learning milestone is **FX Anomaly Detection**.
+
+# Milestone 2 — FX Anomaly Detection
+
+## Overview
+
+Milestone 2 detects statistically unusual behavior in the USD/TRY exchange-rate series.
+
+The final system uses two complementary components:
+
+1. **Statistical baseline** — produces the operational `NORMAL` / `ANOMALOUS` classification.
+2. **Isolation Forest** — produces a continuous multivariate anomaly score and historical percentile.
+
+One-Class SVM and regime-conditioned anomaly models were also evaluated, but were rejected as primary operational detectors because of poor out-of-sample calibration.
+
+---
+
+## Pipeline
+
+```text
+USD/TRY data
+    ↓
+M1-derived market features
+    ↓
+prepare_anomaly_features.py
+    ↓
+12 candidate anomaly features
+    ↓
+feature diagnostics
+    ↓
+11-feature ML input
+    ↓
+┌─────────────────────────────┐
+│ Statistical anomaly rules   │
+└──────────────┬──────────────┘
+               ↓
+       NORMAL / ANOMALOUS
+
+               +
+
+┌─────────────────────────────┐
+│ Isolation Forest            │
+└──────────────┬──────────────┘
+               ↓
+     Multivariate anomaly score
+     Historical score percentile
+```
+
+---
+
+## Feature Preparation
+
+`prepare_anomaly_features.py` starts from the Milestone 1 USD/TRY feature dataset and adds anomaly-specific variables:
+
+* `Absolute_Return_1D`
+* `Return_ZScore_20D`
+* `Volatility_Ratio_5D_60D`
+* `Drawdown_Change_5D`
+
+The rolling return z-score is causal: the current return is compared only against the previous 20 observations.
+
+The resulting dataset contains the original M1 features plus the new anomaly features.
+
+---
+
+## Feature Diagnostics
+
+`inspect_anomaly_features.py` checks:
+
+* feature correlations;
+* skewness and kurtosis;
+* extreme quantiles;
+* StandardScaler versus RobustScaler behavior.
+
+No feature pair exceeded an absolute Pearson correlation of 0.80.
+
+`Absolute_Return_1D` is retained for interpretation and statistical rules but excluded from the multivariate ML model because it is deterministically derived from `Return_1D`.
+
+The final Isolation Forest input contains 11 features.
+
+---
+
+## Statistical Baseline
+
+`statistical_baseline.py` uses four transparent rules:
+
+```text
+|20-day return z-score| ≥ 4
+5-day / 60-day volatility ratio ≥ 2
+|5-day drawdown change| ≥ 5%
+|1-day return| ≥ 4%
+```
+
+Each component is normalized by its threshold.
+
+For example:
+
+```text
+Return_Z component =
+|Return_ZScore_20D| / 4
+```
+
+The overall baseline anomaly score is:
+
+```text
+max(all four component scores)
+```
+
+Therefore:
+
+```text
+score < 1.0  → NORMAL
+score ≥ 1.0  → ANOMALOUS
+```
+
+The full historical dataset produced an anomaly rate of approximately **6.68%**.
+
+---
+
+## Isolation Forest
+
+`isolation_forest.py` trains an unsupervised Isolation Forest using the 11-dimensional anomaly feature vector.
+
+The model identifies unusual **multivariate combinations** that may not breach any individual statistical rule.
+
+Isolation Forest was found to be:
+
+* highly stable across random seeds;
+* useful for detecting compound disturbances;
+* less stable as a binary anomaly classifier through time.
+
+Because of this, its final role is a **continuous secondary anomaly score**, not the operational binary decision.
+
+Higher Isolation Forest scores indicate greater multivariate abnormality.
+
+---
+
+## One-Class SVM
+
+`one_class_svm.py` evaluates an RBF One-Class SVM.
+
+Its preprocessing pipeline is:
+
+```text
+median / IQR normalization
+    ↓
+asinh tail compression
+    ↓
+StandardScaler
+    ↓
+RBF One-Class SVM
+```
+
+The model showed very high sensitivity to synthetic anomalies but poor chronological calibration and was therefore rejected as the primary operational model.
+
+---
+
+## Synthetic Validation
+
+Two controlled validation scripts are used:
+
+* `synthetic_anomaly_validation.py`
+* `synthetic_flip_validation.py`
+
+Synthetic disturbances include:
+
+* return shocks;
+* volatility spikes;
+* drawdown breaks;
+* compound stress.
+
+Each disturbance is tested at three severity levels.
+
+The final flip validation measures:
+
+```text
+NORMAL before perturbation
+        ↓
+synthetic anomaly injected
+        ↓
+ANOMALOUS after perturbation
+```
+
+All tested detector/anomaly combinations showed monotonic response with increasing anomaly severity.
+
+---
+
+## Regime-Conditioned Experiment
+
+`regime_conditioned_validation.py` tests whether the Milestone 1 HMM regimes improve anomaly detection.
+
+Separate models were trained for:
+
+* Low-Volatility Trend;
+* Elevated-Volatility Transition;
+* High-Volatility Stress.
+
+Hard regime conditioning worsened out-of-sample calibration, particularly for One-Class SVM.
+
+This architecture was therefore tested and rejected.
+
+---
+
+## Walk-Forward Validation
+
+`walk_forward_validation.py` evaluates chronological deployment:
+
+```text
+train through 2020 → test 2021
+train through 2021 → test 2022
+train through 2022 → test 2023
+train through 2023 → test 2024
+train through 2024 → test 2025
+train through 2025 → test 2026
+```
+
+The statistical baseline showed the best year-to-year calibration.
+
+Isolation Forest remained useful as a multivariate score but showed substantial threshold drift.
+
+One-Class SVM showed the largest temporal instability.
+
+---
+
+## Stability Analysis
+
+`stability_sensitivity.py` tests Isolation Forest sensitivity to:
+
+* random seed;
+* `max_samples`;
+* anomaly threshold.
+
+Isolation Forest showed excellent random-seed stability:
+
+```text
+Mean pairwise Jaccard ≈ 0.97
+Worst annual mean Jaccard ≈ 0.90
+```
+
+This indicates that its temporal calibration problem is caused mainly by changing market distributions rather than random model instability.
+
+---
+
+## Final Model Selection
+
+`final_model_selection.py` combines the validation results.
+
+Final architecture:
+
+```text
+Primary binary detector:
+STATISTICAL_BASELINE
+
+Secondary ML signal:
+ISOLATION_FOREST_SCORE
+```
+
+Rejected as primary operational models:
+
+```text
+Isolation Forest binary classification
+One-Class SVM binary classification
+Hard regime-conditioned models
+```
+
+---
+
+## Final Training
+
+`train_final_anomaly_model.py` trains the frozen Isolation Forest on the full available dataset.
+
+Saved artifacts include:
+
+```text
+models/
+├── usdtry_isolation_forest.joblib
+├── usdtry_anomaly_metadata.json
+└── usdtry_if_training_scores.npy
+```
+
+The empirical training-score distribution is preserved so that future observations can be assigned a historical Isolation Forest percentile.
+
+The percentile is a **historical rank, not an anomaly probability**.
+
+---
+
+## Operational Inference
+
+`operational_anomaly_inference.py` loads the frozen model and thresholds without retraining.
+
+For each observation it returns:
+
+```text
+Anomaly_State
+Baseline_Anomaly_Score
+Rules_Breached
+Primary_Reason
+
+IF_Anomaly_Score
+IF_Training_Percentile
+Inference_Mode
+```
+
+The inference mode is:
+
+```text
+TRAINING_REFERENCE
+```
+
+for observations at or before the frozen training cutoff, and:
+
+```text
+OUT_OF_SAMPLE_OPERATIONAL
+```
+
+for new observations after the training cutoff.
+
+Daily inference therefore does **not** automatically retrain the model.
+
+---
+
+## Final M2 Architecture
+
+```text
+USD/TRY
+   ↓
+anomaly features
+   ↓
+Statistical baseline
+   ├── NORMAL
+   └── ANOMALOUS
+
+   +
+
+Isolation Forest
+   ├── multivariate anomaly score
+   └── historical score percentile
+```
+
+Milestone 2 therefore combines an interpretable operational detector with a complementary unsupervised machine-learning signal.
+
