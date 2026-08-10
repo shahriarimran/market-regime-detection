@@ -1,0 +1,2 @@
+Model_Version,Training_Start,Training_Cutoff,Observations,Baseline_Anomalies,Baseline_Anomaly_Rate,IF_Score_Median,IF_Score_P95,IF_Score_P99,Latest_State,Latest_Baseline_Score,Latest_IF_Score,Latest_IF_Percentile
+M2-v0.1.0,2017-04-24,2026-08-07,2425,162,0.0668041237113402,0.3658916372506385,0.5346728202380673,0.6781641623012402,NORMAL,0.4484811676278865,0.3485975825099627,0.2618556701030928

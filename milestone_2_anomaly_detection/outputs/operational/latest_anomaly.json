@@ -1,0 +1,23 @@
+{
+  "model_version": "M2-v0.1.0",
+  "date": "2026-08-07",
+  "usdtry": 47.7111,
+  "anomaly_state": "NORMAL",
+  "baseline_anomaly": false,
+  "baseline_anomaly_score": 0.4484811676278865,
+  "rules_breached": 0,
+  "primary_reason": "LOCAL_RETURN_SHOCK",
+  "rule_components": {
+    "return_z": 0.4484811676278865,
+    "volatility_ratio": 0.396268979573304,
+    "drawdown_change": 0.0,
+    "absolute_return": 0.04545979485349
+  },
+  "if_anomaly_score": 0.3485975825099627,
+  "if_training_percentile": 0.2618556701030928,
+  "if_interpretation": "Continuous secondary multivariate anomaly score; not an anomaly probability.",
+  "primary_detector": "STATISTICAL_BASELINE",
+  "secondary_ml_signal": "ISOLATION_FOREST_SCORE",
+  "training_cutoff": "2026-08-07",
+  "inference_mode": "TRAINING_REFERENCE"
+}
