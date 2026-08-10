@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pandas as pd
 
-
 def load_usdtry_csv(csv_path: str | Path) -> pd.DataFrame:
     """
     Load and validate the cleaned USD/TRY historical dataset.
@@ -20,7 +19,6 @@ def load_usdtry_csv(csv_path: str | Path) -> pd.DataFrame:
     # Read CSV
     df = pd.read_csv(csv_path)
 
-    # Validate required columns
     required_columns = {"Date", "USDTRY"}
 
     missing_columns = required_columns - set(df.columns)
@@ -33,7 +31,6 @@ def load_usdtry_csv(csv_path: str | Path) -> pd.DataFrame:
     # Keep only the columns we need
     df = df[["Date", "USDTRY"]].copy()
 
-    # Parse MM/DD/YYYY dates
     df["Date"] = pd.to_datetime(
         df["Date"],
         format="%m/%d/%Y",
@@ -49,7 +46,6 @@ def load_usdtry_csv(csv_path: str | Path) -> pd.DataFrame:
     # Sort chronologically
     df = df.sort_values("Date").reset_index(drop=True)
 
-    # Check for duplicate dates
     if df["Date"].duplicated().any():
         duplicates = df.loc[
             df["Date"].duplicated(keep=False),
@@ -60,12 +56,10 @@ def load_usdtry_csv(csv_path: str | Path) -> pd.DataFrame:
             f"Duplicate dates detected:\n{duplicates}"
         )
 
-    # Check for missing values
     if df[["Date", "USDTRY"]].isna().any().any():
         raise ValueError("Missing Date or USDTRY values detected.")
 
     return df
-
 
 if __name__ == "__main__":
 

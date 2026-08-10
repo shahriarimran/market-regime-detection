@@ -4,7 +4,6 @@ import pandas as pd
 
 from load_data import load_usdtry_csv
 
-
 def create_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     Create market-regime features from USD/TRY daily prices.
@@ -19,7 +18,6 @@ def create_features(df: pd.DataFrame) -> pd.DataFrame:
     features["Return_1D"] = features["USDTRY"].pct_change(1)
 
     features["Return_5D"] = features["USDTRY"].pct_change(5)
-
 
     # ---------------------------------
     # 2. Rolling volatility
@@ -82,7 +80,6 @@ def create_features(df: pd.DataFrame) -> pd.DataFrame:
 
     return features
 
-
 if __name__ == "__main__":
 
     csv_file = Path(
@@ -106,7 +103,6 @@ if __name__ == "__main__":
     print("\nSummary statistics:")
     print(features.describe())
 
-    # Save processed dataset
     output_file = Path(
         "data/processed/usdtry_features.csv"
     )
